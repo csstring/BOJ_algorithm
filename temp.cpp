@@ -1,5 +1,7 @@
 #include <iostream>
-
+#include <string>
+#include <iterator>
+#include <stack>
 using namespace std;
 
 int main()
