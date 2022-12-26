@@ -4,38 +4,36 @@
 #include <stack>
 #include <algorithm>
 using namespace std;
-int n, total, arr[100005], temp;
+int n, temp;
 string str;
-stack< pair<char, int>> st;
+size_t total;
+stack<pair<int,int>> st;
 int main()
 {
   ios::sync_with_stdio(0);
   cin.tie(0);
 
   cin >> str;
-  int size = str.size();
-  for (int i = 0; i < size ; ++i)
+  for (int i = 0; i < str.size(); ++i)
   {
-    temp = 0;
     if (str[i] == '(')
-      st.push({'(', i});
+      st.push({i, 0});
     else
     {
-      if (st.top().second + 1 == i)
+      if (st.top().first == i - 1)
       {
-        arr[i - 1] = 1;
-        arr[i] = 1;
+        st.pop();
+        if (!st.empty())
+          st.top().second++;
       }
       else
       {
-        for (int j = st.top().second; j != i; ++j)
-        {
-          if (arr[j] == 1)
-            temp++;
-        }
-        total += temp / 2 + 1;
+        temp = st.top().second;
+        total += temp + 1;
+        st.pop();
+        if (!st.empty())
+          st.top().second += temp;
       }
-      st.pop();
     }
   }
   cout << total;
