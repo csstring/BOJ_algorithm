@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <iterator>
-#include <stack>
+#include <queue>
 #include <algorithm>
 using namespace std;
 int main()
