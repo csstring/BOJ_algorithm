@@ -10,45 +10,33 @@
 using namespace std;
 int board[100][100];
 int n,l,ans;
-vector<pair<int,int>> v;
+vector<int> v;
 bool run()
 {
-  int lsize = 0;
-  int cur = 0;
-  for (int i =0; i < n; ++i)
+  int lsize = 1;
+  for (int tmp =0; tmp < n-1; ++tmp)
   {
-    if (cur == v[i].first)
-    {
+    if (abs(v[tmp] - v[tmp+1]) > 1) return false;
+    if (v[tmp] == v[tmp+1])
       lsize++;
-      if (lsize >= l && i == n -1)
-      {
-        for (int j = 0; j < lsize; ++j)
-          v[i-j].second++;
-      }
-    }
-    else
+    else if (v[tmp] < v[tmp+1])
     {
-      if (lsize >= l)
-      {
-        for (int j = 1; j <= lsize; ++j)
-          v[i-j].second++;
-      }
+      if (lsize < l) return false;
       lsize = 1;
-      cur = v[i].first;
+    }
+    else if (v[tmp] > v[tmp+1])
+    {
+      lsize = 0;
+      for (int j = tmp + 1; j < n; ++j){
+        if (v[j] == v[tmp+1]) lsize++;
+        else break;
+        if (lsize == l) break;
+      }
+      if (lsize < l) return false;
+      tmp += lsize-1;
+      lsize = 0;
     }
   }
-  for (int i = 0; i<n; ++i){
-   cout << v[i].first << ',' << v[i].second << ' ';
-  }
-  cout << endl;
-  for (int i =0; i < n-1; ++i){
-    int cur = v[i].first;
-    if (v[i+1].first == cur || v[i+1].second == cur) continue;
-    return false;
-  }
-  for (int i =0; i < n; ++i)
-    cout << v[i].first << ' ';
-    cout << endl;
   return true;
 }
 int main()
@@ -64,15 +52,13 @@ int main()
   }
   for (int i = 0; i < n; ++i){
     for (int j =0; j <n; ++j){
-      v[j].first = board[i][j];
-      v[j].second = board[i][j];
+      v[j] = board[i][j];
     }
     ans += run();
   }
   for (int j = 0; j < n; ++j){
     for (int i =0; i <n; ++i){
-      v[i].first = board[i][j];
-      v[i].second = board[i][j];
+      v[i] = board[i][j];
     }
     ans += run();
   }
