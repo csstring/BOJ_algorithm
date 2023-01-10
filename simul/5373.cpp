@@ -9,22 +9,16 @@
 #include <vector>
 using namespace std;
 char color[] = {'w', 'r', 'g', 'o', 'b', 'y'};
-vector<int> pv[6] ={{1,2,3,4},{0,4,5,2},{0,1,5,3},{0,2,5,4},{0,3,5,1},{1,4,3,2}};
-//{0 w} {1 r} {2 g} {3 o} {4 b} {5 y}
-/*vector<int> U ={1,2,3,4};
-vector<int> D ={1,4,3,2};
-vector<int> F ={0,4,5,2};
-vector<int> B ={0,2,5,4};
-vector<int> L ={0,1,5,3};
-vector<int> R ={0,3,5,1};
-00 01 02
-00 10 20
-20 21 22
-*/
+const int U = 0;
+const int F = 1;
+const int L = 2;
+const int B = 3;
+const int R = 4;
+const int D = 5;
 char board[6][3][3];
 int n,Count;
 char plane,dir;
-void plan_rot(int k, char p)
+void plan_rot(int k)
 {
   char tmp[9];
   int index = 0;
@@ -34,75 +28,125 @@ void plan_rot(int k, char p)
     }
   }
   index = 0;
-  if (p == '+'){
     for (int j =2; j >=0; --j)
       for (int i = 0; i < 3; ++i)
         board[k][i][j] = tmp[index++];
-  }
-  else{
-    for (int j =0; j <3; ++j)
-      for (int i = 2; i >= 0; --i)
-        board[k][i][j] = tmp[index++];
-  }
 }
 void edge_rot(int k, char p)
 {
-  char tmp[4][3];
+  int temp;
   int clock = 1;
   if (p == '-') clock = 3;
-  if (k == 0)
+  while (clock >0)
   {
-    for (int i = 0; i < 4; ++i)
-      for (int j = 0; j < 3; ++j)
-        tmp[i][j] = board[pv[k][i]][0][j];
-    for (int i = 0; i < 4; ++i)
-      for (int j = 0; j < 3; ++j)
-        board[pv[k][(i +clock)%4]][0][j] = tmp[i][j];
+    clock--;
+    plan_rot(k);
+  for (int i = 0; i < 3; ++i)
+  {
+    if (k == 0)
+    {
+      temp = board[F][0][i];
+      board[F][0][i] = board[R][0][i];
+      board[R][0][i] = board[B][0][i];
+      board[B][0][i] = board[L][0][i];
+      board[L][0][i] = temp;
+    }
+    if (k == 1)//F
+    {
+      temp = board[U][2][i];
+      board[U][2][i] = board[L][2-i][2];
+      board[L][2-i][2] = board[D][0][2-i];
+      board[D][0][2-i] = board[R][i][0];
+      board[R][i][0] = temp;
+    }
+    if (k == 2) //L
+    {
+      temp = board[U][i][0];
+      board[U][i][0] = board[B][2-i][2];
+      board[B][2-i][2] = board[D][i][0];
+      board[D][i][0] = board[F][i][0];
+      board[F][i][0] = temp;
+    }
+    if (k == 3) //B
+    {
+      temp = board[U][0][i];
+      board[U][0][i] = board[R][i][2];
+      board[R][i][2] = board[D][2][2-i];
+      board[D][2][2-i] = board[L][2-i][0];
+      board[L][2-i][0] = temp;
+    }
+    if (k == 4) //R
+    {
+      temp = board[U][2-i][2];
+      board[U][2-i][2] = board[F][2-i][2];
+      board[F][2-i][2] = board[D][2-i][2];
+      board[D][2-i][2] = board[B][i][0];
+      board[B][i][0] = temp;
+    }
+    if (k == 5)
+    {
+      temp = board[F][2][i];
+      board[F][2][i] = board[L][2][i];
+      board[L][2][i] = board[B][2][i];
+      board[B][2][i] = board[R][2][i];
+      board[R][2][i] = temp;
+    }
   }
-  if (k == 1)
-  {
-    for (int i = 0; i < 4; ++i)
-      for (int j = 0; j < 3; ++j)
-        tmp[i][j] = board[pv[k][i]][2][j];
-    for (int i = 0; i < 4; ++i)
-      for (int j = 0; j < 3; ++j)
-        board[pv[k][(i +clock)%4]][2][j] = tmp[i][j];
   }
-  if (k == 2)
+}
+void edge_rrot(int k)
+{
+  int temp;
+  for (int i = 0; i < 3; ++i)
   {
-    for (int i = 0; i < 4; ++i)
-      for (int j = 0; j < 3; ++j)
-        tmp[i][j] = board[pv[k][i]][j][0];
-    for (int i = 0; i < 4; ++i)
-      for (int j = 0; j < 3; ++j)
-        board[pv[k][(i +clock)%4]][j][0] = tmp[i][j];
-  }
-  if (k == 3)
-  {
-    for (int i = 0; i < 4; ++i)
-      for (int j = 0; j < 3; ++j)
-        tmp[i][j] = board[pv[k][i]][0][j];
-    for (int i = 0; i < 4; ++i)
-      for (int j = 0; j < 3; ++j)
-        board[pv[k][(i +clock)%4]][0][j] = tmp[i][j];
-  }
-  if (k == 4)
-  {
-    for (int i = 0; i < 4; ++i)
-      for (int j = 0; j < 3; ++j)
-        tmp[i][j] = board[pv[k][i]][j][2];
-    for (int i = 0; i < 4; ++i)
-      for (int j = 0; j < 3; ++j)
-        board[pv[k][(i +clock)%4]][j][2] = tmp[i][j];
-  }
-  if (k == 5)
-  {
-    for (int i = 0; i < 4; ++i)
-      for (int j = 0; j < 3; ++j)
-        tmp[i][j] = board[pv[k][i]][2][j];
-    for (int i = 0; i < 4; ++i)
-      for (int j = 0; j < 3; ++j)
-        board[pv[k][(i +clock)%4]][2][j] = tmp[i][j];
+    if (k == 0)
+    {
+      temp = board[F][0][i];
+      board[F][0][i] = board[L][0][i];
+      board[L][0][i] = board[B][0][i];
+      board[B][0][i] = board[R][0][i];
+      board[R][0][i] = temp;
+    }
+    if (k == 1)//F
+    {
+      temp = board[U][2][i];
+      board[U][2][i] = board[R][i][0];
+      board[R][i][0] = board[D][0][i];
+      board[D][0][i] = board[L][2-i][2];
+      board[L][2-i][2] = temp;
+    }
+    if (k == 2) //L
+    {
+      temp = board[U][i][0];
+      board[U][i][0] = board[F][i][0];
+      board[F][i][0] = board[D][i][0];
+      board[D][i][0] = board[B][2-i][2];
+      board[B][2-i][2] = temp;
+    }
+    if (k == 3) //B
+    {
+      temp = board[U][0][i];
+      board[U][0][i] = board[L][2-i][0];
+      board[L][2-i][0] = board[D][2][2-i];
+      board[D][2][2-i] = board[R][i][2];
+      board[R][i][2] = temp;
+    }
+    if (k == 4) //R
+    {
+      temp = board[U][2-i][2];
+      board[U][2-i][2] = board[B][i][0];
+      board[B][i][0] = board[D][2-i][2];
+      board[D][2-i][2] = board[F][2-i][2];
+      board[F][2-i][2] = temp;
+    }
+    if (k == 5)
+    {
+      temp = board[F][2][i];
+      board[F][2][i] = board[R][2][i];
+      board[R][2][i] = board[B][2][i];
+      board[B][2][i] = board[L][2][i];
+      board[L][2][i] = temp;
+    }
   }
 }
 int main()
@@ -122,14 +166,13 @@ int main()
     {
       cin >> plane >> dir;
       int Case;
-      if (plane == 'U') Case =0;
-      if (plane == 'F') Case =1;
-      if (plane == 'L') Case =2; 
-      if (plane == 'B') Case =3; 
-      if (plane == 'R') Case =4; 
-      if (plane == 'D') Case =5;
-      plan_rot(Case, dir);
-      edge_rot(Case,dir); 
+      if (plane == 'U') Case = U;
+      if (plane == 'F') Case = F;
+      if (plane == 'L') Case = L; 
+      if (plane == 'B') Case = B; 
+      if (plane == 'R') Case = R; 
+      if (plane == 'D') Case = D;
+      edge_rot(Case, dir);
     }
     for (int i =0; i <3; ++i){
       for (int j = 0; j <3; ++j){
