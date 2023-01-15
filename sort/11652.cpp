@@ -20,9 +20,40 @@ int main()
     v.push_back(val);
   }
   sort(v.begin(), v.end());
-  minval = INT64_MIN;
+  minval = INT64_MAX;
+  cnt = 1;
+  tmpcnt = 1;
   for (int i =0; i < v.size(); ++i)
   {
-    
+    if (i == v.size()-1)
+    {
+      if (tmpcnt > cnt){
+        minval = v[i];
+        cnt = tmpcnt;
+      }
+      else if (tmpcnt == cnt)
+      {
+        minval = min(minval, v[i]);
+      }
+      break;
+    }
+    if (v[i] == v[i+1])
+    {
+      tmpcnt++;
+      continue;
+    }
+    else
+    {
+      if (tmpcnt > cnt){
+        minval = v[i];
+        cnt = tmpcnt;
+      }
+      else if (tmpcnt == cnt)
+      {
+        minval = min(minval, v[i]);
+      }
+      tmpcnt = 1;
+    }
   }
+  cout << minval;
 }
